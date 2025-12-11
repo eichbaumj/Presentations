@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYPHER ARENA - MWA201</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="screen-login" class="screen active">
+            <div class="container">
+                <div class="logo-container">
+                    <pre class="ascii-logo">
+ ██████╗██╗   ██╗██████╗ ██╗  ██╗███████╗██████╗
+██╔════╝╚██╗ ██╔╝██╔══██╗██║  ██║██╔════╝██╔══██╗
+██║      ╚████╔╝ ██████╔╝███████║█████╗  ██████╔╝
+██║       ╚██╔╝  ██╔═══╝ ██╔══██║██╔══╝  ██╔══██╗
+╚██████╗   ██║   ██║     ██║  ██║███████╗██║  ██║
+ ╚═════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+           █████╗ ██████╗ ███████╗███╗   ██╗ █████╗
+          ██╔══██╗██╔══██╗██╔════╝████╗  ██║██╔══██╗
+          ███████║██████╔╝█████╗  ██╔██╗ ██║███████║
+          ██╔══██║██╔══██╗██╔══╝  ██║╚██╗██║██╔══██║
+          ██║  ██║██║  ██║███████╗██║ ╚████║██║  ██║
+          ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝
+                    </pre>
+                    <p class="subtitle">[ MWA201 - MALWARE ANALYSIS TRAINING ]</p>
+                </div>
+
+                <div class="login-box">
+                    <label for="username-input">ENTER YOUR CALLSIGN:</label>
+                    <div class="input-group">
+                        <span class="prompt">&gt;</span>
+                        <input type="text" id="username-input" maxlength="20" autocomplete="off" autofocus>
+                    </div>
+                    <button id="btn-login" class="btn btn-primary">[ INITIALIZE ]</button>
+                </div>
+
+                <div class="version">v1.0.0 // TRAINING SYSTEM ACTIVE</div>
+            </div>
+        </div>
+
+        <!-- Menu Screen -->
+        <div id="screen-menu" class="screen">
+            <div class="container">
+                <div class="header">
+                    <div class="user-info">
+                        <span class="label">AGENT:</span>
+                        <span id="display-username" class="value">---</span>
+                    </div>
+                    <div class="stats-mini">
+                        <span class="stat">W:<span id="stat-wins">0</span></span>
+                        <span class="stat">L:<span id="stat-losses">0</span></span>
+                        <span class="stat">PTS:<span id="stat-points">0</span></span>
+                    </div>
+                </div>
+
+                <div class="menu-container">
+                    <h2 class="menu-title">// SELECT OPERATION</h2>
+
+                    <div class="menu-buttons">
+                        <button id="btn-practice" class="btn btn-menu">
+                            <span class="btn-icon">[1]</span>
+                            <span class="btn-text">PRACTICE MODE</span>
+                            <span class="btn-desc">Solo training - decode against the clock</span>
+                        </button>
+
+                        <button id="btn-multiplayer" class="btn btn-menu">
+                            <span class="btn-icon">[2]</span>
+                            <span class="btn-text">MULTIPLAYER DUEL</span>
+                            <span class="btn-desc">1v1 combat - challenge your classmates</span>
+                        </button>
+
+                        <button id="btn-achievements" class="btn btn-menu">
+                            <span class="btn-icon">[3]</span>
+                            <span class="btn-text">ACHIEVEMENTS</span>
+                            <span class="btn-desc">View your earned badges</span>
+                        </button>
+
+                        <button id="btn-settings" class="btn btn-menu">
+                            <span class="btn-icon">[4]</span>
+                            <span class="btn-text">SETTINGS</span>
+                            <span class="btn-desc">Audio, display options</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="btn-logout" class="btn btn-small">[ DISCONNECT ]</button>
+            </div>
+        </div>
+
+        <!-- Multiplayer Lobby Screen -->
+        <div id="screen-lobby" class="screen">
+            <div class="container">
+                <div class="header">
+                    <div class="user-info">
+                        <span class="label">AGENT:</span>
+                        <span id="lobby-username" class="value">---</span>
+                    </div>
+                    <div class="room-info">
+                        <span class="label">ROOM:</span>
+                        <span id="room-code-display" class="value room-code">------</span>
+                    </div>
+                </div>
+
+                <div class="lobby-container">
+                    <!-- Room Actions (shown when not in room) -->
+                    <div id="room-actions" class="room-actions">
+                        <h2 class="section-title">// JOIN THE ARENA</h2>
+                        <div class="room-buttons">
+                            <button id="btn-create-room" class="btn btn-primary">[ CREATE ROOM ]</button>
+                            <div class="join-room-group">
+                                <input type="text" id="room-code-input" maxlength="6" placeholder="ROOM CODE" class="room-code-input">
+                                <button id="btn-join-room" class="btn btn-secondary">[ JOIN ]</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Player List (shown when in room) -->
+                    <div id="player-list-section" class="player-list-section hidden">
+                        <h2 class="section-title">// OPERATIVES IN ROOM</h2>
+                        <div id="player-list" class="player-list">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <div class="matchmaking-section">
+                            <button id="btn-find-match" class="btn btn-primary btn-large">[ FIND OPPONENT ]</button>
+                            <div id="matchmaking-status" class="matchmaking-status hidden">
+                                <span class="searching-text">SEARCHING FOR OPPONENT</span>
+                                <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Chat Section -->
+                        <div id="chat-section" class="chat-section">
+                            <h3 class="section-title">// COMMS CHANNEL</h3>
+                            <div id="chat-messages" class="chat-messages">
+                                <!-- Messages populated by JS -->
+                            </div>
+                            <div class="chat-input-wrapper">
+                                <span class="prompt">&gt;</span>
+                                <input type="text" id="chat-input" placeholder="Type message..." maxlength="200" autocomplete="off">
+                                <button id="btn-send-chat" class="btn btn-small">SEND</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lobby-footer">
+                    <button id="btn-leave-room" class="btn btn-danger btn-small hidden">[ LEAVE ROOM ]</button>
+                    <button id="btn-back-to-menu" class="btn btn-secondary btn-small">[ BACK TO MENU ]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multiplayer Duel Screen -->
+        <div id="screen-duel" class="screen">
+            <div class="game-container">
+                <!-- Duel Header -->
+                <div class="duel-header">
+                    <div class="duel-player duel-player-left">
+                        <span class="player-name" id="duel-player1-name">YOU</span>
+                        <div class="player-hearts" id="duel-player1-hp">&#9829;&#9829;&#9829;&#9829;&#9829;&#9829;</div>
+                    </div>
+                    <div class="duel-info">
+                        <span class="round-display">ROUND <span id="duel-round">1</span>/15</span>
+                        <span class="encoding-type">ENCODING: <span id="duel-encoding">ROT13</span></span>
+                    </div>
+                    <div class="duel-player duel-player-right">
+                        <span class="player-name" id="duel-player2-name">OPPONENT</span>
+                        <div class="player-hearts" id="duel-player2-hp">&#9829;&#9829;&#9829;&#9829;&#9829;&#9829;</div>
+                    </div>
+                </div>
+
+                <!-- Challenge Area -->
+                <div class="challenge-area">
+                    <div class="challenge-box">
+                        <div class="challenge-label">// INTERCEPT DECODED STRING</div>
+                        <div class="encoded-string" id="duel-encoded-string">
+                            <span class="loading-dots">WAITING<span>.</span><span>.</span><span>.</span></span>
+                        </div>
+                    </div>
+
+                    <div class="answer-section">
+                        <div class="input-wrapper">
+                            <span class="prompt">&gt;</span>
+                            <input type="text" id="duel-answer-input" class="answer-input" autocomplete="off" placeholder="Type decoded answer...">
+                            <button id="btn-duel-submit" class="btn btn-submit">SUBMIT</button>
+                        </div>
+                        <div class="timer-display">
+                            <span class="timer-icon">&#9201;</span>
+                            <span id="duel-timer">00:00</span>
+                        </div>
+                    </div>
+
+                    <div id="duel-feedback-area" class="feedback-area hidden">
+                        <div class="feedback-message"></div>
+                    </div>
+                </div>
+
+                <!-- Reference Table -->
+                <div class="reference-section">
+                    <div class="reference-header">
+                        <span class="ref-icon">&#128273;</span>
+                        <span>ROT13 REFERENCE TABLE</span>
+                    </div>
+                    <div class="reference-table">
+                        <div class="ref-row">
+                            <span class="ref-label">PLAIN:</span>
+                            <div class="ref-letters">
+                                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span>
+                                <span class="ref-divider">&#8596;</span>
+                                <span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span>
+                            </div>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">ROT13:</span>
+                            <div class="ref-letters">
+                                <span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span>
+                                <span class="ref-divider">&#8596;</span>
+                                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duel Controls -->
+                <div class="duel-controls">
+                    <button id="btn-abandon-match" class="btn btn-danger btn-small">[ ABANDON MATCH ]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Mode Screen -->
+        <div id="screen-practice" class="screen">
+            <div class="game-container">
+                <!-- ASCII Reference Table (Matrix-style, shown for HEX encoding) -->
+                <div id="ascii-table-container" class="ascii-table-container hidden">
+                    <div class="ascii-table-header">
+                        <span class="ascii-title">// HEX-ASCII REFERENCE</span>
+                        <span class="ascii-hint">Row + Column = Hex Value</span>
+                    </div>
+                    <div id="ascii-table" class="ascii-table">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Game Header -->
+                <div class="game-header">
+                    <div class="game-info-left">
+                        <span class="round-display">ROUND <span id="practice-round">1</span>/15</span>
+                        <span class="mode-badge">PRACTICE MODE</span>
+                    </div>
+                    <div class="game-info-center">
+                        <span class="encoding-type">ENCODING: <span id="encoding-type">ROT13</span></span>
+                    </div>
+                    <div class="game-info-right">
+                        <span class="score-display">SCORE: <span id="practice-score">0</span></span>
+                        <span class="combo-display">COMBO: x<span id="practice-combo">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Health Bar (Practice uses "lives") -->
+                <div class="health-section">
+                    <div class="player-health">
+                        <span class="health-label">SYSTEM INTEGRITY</span>
+                        <div class="health-bar">
+                            <div id="practice-health-bar" class="health-fill" style="width: 100%"></div>
+                        </div>
+                        <span class="health-hearts" id="practice-hearts">&#9829;&#9829;&#9829;&#9829;&#9829;&#9829;</span>
+                    </div>
+                </div>
+
+                <!-- Challenge Area -->
+                <div id="challenge-area" class="challenge-area">
+                    <div class="challenge-box">
+                        <div class="challenge-label">// INTERCEPT DECODED STRING</div>
+                        <div class="encoded-string" id="encoded-string">
+                            <span class="loading-dots">INITIALIZING<span>.</span><span>.</span><span>.</span></span>
+                        </div>
+                    </div>
+
+                    <!-- XOR Key Display (shown when needed) -->
+                    <div id="xor-key-display" class="xor-key-display hidden">
+                        XOR KEY: <span id="xor-key-value">0x00</span>
+                    </div>
+
+                    <!-- Answer Input -->
+                    <div class="answer-section">
+                        <div class="input-wrapper">
+                            <span class="prompt">&gt;</span>
+                            <input type="text" id="answer-input" class="answer-input" autocomplete="off" placeholder="Type decoded answer...">
+                            <button id="btn-submit" class="btn btn-submit">SUBMIT</button>
+                        </div>
+                        <div class="timer-display">
+                            <span class="timer-icon">&#9201;</span>
+                            <span id="practice-timer">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Area -->
+                    <div id="feedback-area" class="feedback-area hidden">
+                        <div class="feedback-message"></div>
+                    </div>
+                </div>
+
+                <!-- ROT13 Reference Table -->
+                <div class="reference-section">
+                    <div class="reference-header">
+                        <span class="ref-icon">&#128273;</span>
+                        <span>ROT13 REFERENCE TABLE</span>
+                        <button id="btn-toggle-ref" class="btn btn-tiny">[ TOGGLE ]</button>
+                    </div>
+                    <div id="reference-table" class="reference-table">
+                        <div class="ref-row">
+                            <span class="ref-label">PLAIN:</span>
+                            <div class="ref-letters" id="ref-plain">
+                                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span>
+                                <span class="ref-divider">&#8596;</span>
+                                <span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span>
+                            </div>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">ROT13:</span>
+                            <div class="ref-letters" id="ref-cipher">
+                                <span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span>
+                                <span class="ref-divider">&#8596;</span>
+                                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span>
+                            </div>
+                        </div>
+                        <!-- Additional encoding references -->
+                        <div class="ref-extra">
+                            <div class="ref-hint"><strong>HEX:</strong> Each pair = ASCII value (e.g., 41 = 'A')</div>
+                            <div class="ref-hint"><strong>BASE64:</strong> Decode using standard base64 alphabet</div>
+                            <div class="ref-hint"><strong>URL:</strong> %XX = hex ASCII (e.g., %20 = space)</div>
+                            <div class="ref-hint"><strong>XOR:</strong> char XOR key = result (reverse with same key)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Controls -->
+                <div class="game-controls">
+                    <button id="btn-quit-practice" class="btn btn-danger">[ ABORT MISSION ]</button>
+                    <div class="power-ups">
+                        <button class="btn btn-powerup" id="powerup-hint" title="Reveal first 2 characters">
+                            <span class="powerup-icon">&#128161;</span>
+                            <span class="powerup-count">x<span id="hint-count">1</span></span>
+                        </button>
+                        <button class="btn btn-powerup" id="powerup-skip" title="Skip this challenge">
+                            <span class="powerup-icon">&#9193;</span>
+                            <span class="powerup-count">x<span id="skip-count">2</span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="screen-results" class="screen">
+            <div class="container">
+                <div id="results-content" class="results-box">
+                    <h2 id="results-title" class="results-title">MISSION COMPLETE</h2>
+                    <div class="results-stats">
+                        <div class="result-item">
+                            <span class="result-label">FINAL SCORE</span>
+                            <span class="result-value" id="result-score">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">ROUNDS SURVIVED</span>
+                            <span class="result-value" id="result-rounds">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">BEST COMBO</span>
+                            <span class="result-value" id="result-combo">x0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">ACCURACY</span>
+                            <span class="result-value" id="result-accuracy">0%</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">AVG TIME</span>
+                            <span class="result-value" id="result-avgtime">0.0s</span>
+                        </div>
+                    </div>
+
+                    <div id="new-achievements" class="new-achievements hidden">
+                        <h3>NEW ACHIEVEMENTS UNLOCKED!</h3>
+                        <div id="achievement-list" class="achievement-list"></div>
+                    </div>
+
+                    <div class="results-buttons">
+                        <button id="btn-play-again" class="btn btn-primary">[ RETRY MISSION ]</button>
+                        <button id="btn-back-menu" class="btn btn-secondary">[ RETURN TO BASE ]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Screen -->
+        <div id="screen-achievements" class="screen">
+            <div class="container">
+                <h2 class="section-title">// ACHIEVEMENT DATABASE</h2>
+                <div id="achievements-grid" class="achievements-grid">
+                    <!-- Populated by JS -->
+                </div>
+                <button id="btn-back-from-achievements" class="btn btn-secondary">[ BACK ]</button>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="screen-settings" class="screen">
+            <div class="container">
+                <h2 class="section-title">// SYSTEM CONFIGURATION</h2>
+                <div class="settings-panel">
+                    <div class="setting-item">
+                        <label for="setting-volume">MASTER VOLUME</label>
+                        <input type="range" id="setting-volume" min="0" max="100" value="50">
+                        <span id="volume-value">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="setting-sfx">SOUND EFFECTS</label>
+                        <input type="checkbox" id="setting-sfx" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="setting-music">BACKGROUND MUSIC</label>
+                        <input type="checkbox" id="setting-music" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="setting-animations">ANIMATIONS</label>
+                        <input type="checkbox" id="setting-animations" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="setting-difficulty">DEFAULT DIFFICULTY</label>
+                        <select id="setting-difficulty">
+                            <option value="easy">EASY (ROT13 only)</option>
+                            <option value="normal" selected>NORMAL (Mixed encodings)</option>
+                            <option value="hard">HARD (All encodings + XOR)</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="btn-back-from-settings" class="btn btn-secondary">[ BACK ]</button>
+            </div>
+        </div>
+
+        <!-- Audio toggle (floating) -->
+        <button id="btn-audio-toggle" class="btn-audio" title="Toggle Audio">
+            <span id="audio-icon">&#128266;</span>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/encoder.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
